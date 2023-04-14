@@ -32,23 +32,22 @@ def read_latest_n_jsons(
     return newest_jsons
 
 
-def find_new_parkruns(new_json:dict, prev_json:dict) -> list[str]:
+def find_new_parkruns(new_json: dict, prev_json: dict) -> list[str]:
     new_event_names = []
     for event in new_json:
-        new_event_names.append(
-            event['properties']['EventLongName']
-        )
+        new_event_names.append(event["properties"]["EventLongName"])
     prev_event_names = []
     for event in prev_json:
-        prev_event_names.append(
-            event['properties']['EventLongName']
-        )
+        prev_event_names.append(event["properties"]["EventLongName"])
     return [i for i in new_event_names if i not in prev_event_names]
 
-def find_new_parkun_locations(new_json:dict,event_name:str) -> tuple[str,list[float]]:
+
+def find_new_parkun_locations(
+    new_json: dict, event_name: str
+) -> tuple[str, list[float]]:
     for i in range(len(new_json)):
-        if new_json[i]['properties']['EventLongName'] == event_name:
-            return event_name, new_json[i]['geometry']['coordinates']
+        if new_json[i]["properties"]["EventLongName"] == event_name:
+            return event_name, new_json[i]["geometry"]["coordinates"]
 
 
 if __name__ == "__main__":
@@ -61,5 +60,5 @@ if __name__ == "__main__":
     new_parkruns = find_new_parkruns(new_json, prev_json)
     new_parkrun_loc_dict = {}
     for run in new_parkruns:
-        new_parkrun_loc_dict[run] = find_new_parkun_locations(new_json,run)[1]
+        new_parkrun_loc_dict[run] = find_new_parkun_locations(new_json, run)[1]
     print(new_parkrun_loc_dict)
