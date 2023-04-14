@@ -4,7 +4,7 @@ from typing import Union
 from utils import read_json, read_toml, save_json
 
 UK_COUNTRY_CODE = 97
-UK_JSON_SAVE_DIR = "parsed_json"
+UK_JSON_SAVE_DIR = "uk_json"
 
 
 def find_latest_n_jsons(json_save_dir: Union[Path, str], n: int = 2) -> list[str]:
