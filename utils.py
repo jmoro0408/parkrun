@@ -17,6 +17,8 @@ def read_json(json_file: Union[Path, str]) -> dict:
 
 
 def save_json(json_file: dict, fname: str, save_dir: Union[Path, str]) -> None:
-    jsonpath = Path(save_dir, f"{fname}.json")
+    if Path(fname).suffix != ".json":
+        fname = fname + ".json"
+    jsonpath = Path(save_dir, fname)
     with open(jsonpath, "w") as f:
         json.dump(json_file, f, ensure_ascii=False)
