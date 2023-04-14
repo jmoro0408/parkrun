@@ -16,11 +16,12 @@ def filter_uk_parkruns(full_json: dict) -> list[dict]:
     return uk_events
 
 
-def find_none_filtered_jsons(full_json_save_dir:Union[Path,str],
-                       uk_json_save_dir:Union[Path,str]) -> list[str]:
-                    full_jsons = Path(full_json_save_dir).glob("**/*")
-                    uk_jsons = Path(uk_json_save_dir).glob("**/*")
-                    return [x for x in full_jsons if x not in uk_jsons]
+def find_none_filtered_jsons(
+    full_json_save_dir: Union[Path, str], uk_json_save_dir: Union[Path, str]
+) -> list[str]:
+    full_jsons = Path(full_json_save_dir).glob("**/*")
+    uk_jsons = Path(uk_json_save_dir).glob("**/*")
+    return [x for x in full_jsons if x not in uk_jsons]
 
 
 if __name__ == "__main__":
