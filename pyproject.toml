@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "parkrun"
+version = "0.1.0"
+description = ""
+authors = ["jmoro0408 <james.moro.11@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pandas = "^2.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
