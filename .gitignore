@@ -1,6 +1,6 @@
 json_files/
 scratch.ipynb
-
+parsed_json/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
