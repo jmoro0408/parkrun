@@ -2,6 +2,8 @@ json_files/
 scratch.ipynb
 uk_json/
 credentials.toml
+maps/
+gmail_credentials.json
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -131,3 +133,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
