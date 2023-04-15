@@ -97,18 +97,19 @@ def send_email(
     message = EmailMessage()
     message["From"] = sender_address
     message["To"] = recipient_address
-    message["Subject"] = "This weeks new parkrun"
+    message["Subject"] = "This weeks new parkrun(s)"
     body = mail_content
     message.set_content(body)
-    mime_type, _ = mimetypes.guess_type(attachment)
-    mime_type, mime_subtype = mime_type.split("/")
-    with open(attachment, "rb") as file:
-        message.add_attachment(
-            file.read(),
-            maintype=mime_type,
-            subtype=mime_subtype,
-            filename=attachment_fname,
-        )
+    if attachment is not None:
+        mime_type, _ = mimetypes.guess_type(attachment)
+        mime_type, mime_subtype = mime_type.split("/")
+        with open(attachment, "rb") as file:
+            message.add_attachment(
+                file.read(),
+                maintype=mime_type,
+                subtype=mime_subtype,
+                filename=attachment_fname,
+            )
     mail_server = smtplib.SMTP_SSL("smtp.gmail.com")
     mail_server.login(sender_address, password)
     mail_server.send_message(message)
@@ -135,14 +136,18 @@ if __name__ == "__main__":
 
     create_map(new_parkrun_loc_dict, mapbox_token, MAP_SAVE_FNAME)
     new_parkruns_content = "\n".join([x for x in new_parkrun_loc_dict.keys()])
-    test_content = f"This weeks new parkruns:\n {new_parkruns_content}"
+    mail_content = f"This weeks new parkruns:\n {new_parkruns_content}"
+    attachment = MAP_SAVE_FNAME
+    if len(new_parkrun_loc_dict.keys()) == 0:
+        mail_content = "No new parkruns found this week!"
+        attachment = None
 
     for recipient in recipient_addresses:
         send_email(
             sender_address,
             gmail_password,
             recipient,
-            test_content,
-            f"{MAP_SAVE_FNAME}",
+            mail_content,
+            attachment,
             f"{DATE_TODAY}" + ".html",
         )
