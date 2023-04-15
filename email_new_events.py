@@ -1,5 +1,7 @@
+import mimetypes
 import smtplib
 from datetime import datetime
+from email.message import EmailMessage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
@@ -10,7 +12,9 @@ import plotly.express as px
 
 from utils import read_json, read_toml
 
-MAP_SAVE_FNAME = Path("maps", datetime.today().strftime('%Y-%m-%d') + ".html")
+DATE_TODAY = datetime.today().strftime("%Y-%m-%d")
+MAP_SAVE_FNAME = Path("maps", DATE_TODAY + ".html")
+
 
 def find_latest_n_jsons(uk_jsons: Union[Path, str], n: int = 2) -> list[str]:
     """Finds the latest n jsons saved in the saved json directory.
@@ -57,51 +61,68 @@ def find_new_parkun_locations(
         if new_json[i]["properties"]["EventLongName"] == event_name:
             return event_name, new_json[i]["geometry"]["coordinates"]
 
-def create_map(new_parkun_dict:dict,
-               mapbox_token:str,
-               save_fname:Union[Path,str])->None:
-    df = (pd.DataFrame.from_dict(new_parkun_dict)
-      .T
-      .reset_index().
-      rename(columns = {"index":"Event Name", 0:"lon", 1:"lat"}))
+
+def create_map(
+    new_parkun_dict: dict, mapbox_token: str, save_fname: Union[Path, str]
+) -> None:
+    df = (
+        pd.DataFrame.from_dict(new_parkun_dict)
+        .T.reset_index()
+        .rename(columns={"index": "Event Name", 0: "lon", 1: "lat"})
+    )
 
     px.set_mapbox_access_token(mapbox_token)
-    fig = px.scatter_mapbox(df,
-                            lat="lat",
-                            lon="lon",
-                            hover_name = "Event Name",
-                    size_max=15,
-                    zoom=3.5,
-                    title = "New Parkrun Events",
-                    mapbox_style = 'open-street-map')
+    fig = px.scatter_mapbox(
+        df,
+        lat="lat",
+        lon="lon",
+        hover_name="Event Name",
+        size_max=15,
+        zoom=3.5,
+        title="New Parkrun Events",
+        mapbox_style="open-street-map",
+    )
     fig.write_html(save_fname)
 
 
-def send_email(sender:str, password:str, recipient:str,mail_content:str) -> None:
+def send_email(
+    sender_address: str,
+    password: str,
+    recipient_address: str,
+    mail_content: str,
+    attachment,
+    attachment_fname: str,
+) -> None:
 
-    #Setup the MIME
-    message = MIMEMultipart()
-    message['From'] = sender
-    message['To'] = recipient
-    message['Subject'] = 'This weeks new parkruns'   #The subject line
-    #The body and the attachments for the mail
-    message.attach(MIMEText(mail_content, 'plain'))
-    #Create SMTP session for sending the mail
-    session = smtplib.SMTP('smtp.gmail.com', 587) #use gmail with port
-    session.starttls() #enable security
-    session.login(sender, password) #login with mail_id and password
-    text = message.as_string()
-    session.sendmail(sender, recipient, text)
-    session.quit()
-    print('Mail Sent')
+    message = EmailMessage()
+    message["From"] = sender_address
+    message["To"] = recipient_address
+    message["Subject"] = "This weeks new parkrun"
+    body = mail_content
+    message.set_content(body)
+    mime_type, _ = mimetypes.guess_type(attachment)
+    mime_type, mime_subtype = mime_type.split("/")
+    with open(attachment, "rb") as file:
+        message.add_attachment(
+            file.read(),
+            maintype=mime_type,
+            subtype=mime_subtype,
+            filename=attachment_fname,
+        )
+    mail_server = smtplib.SMTP_SSL("smtp.gmail.com")
+    mail_server.login(sender_address, password)
+    mail_server.send_message(message)
+    mail_server.quit()
+    print("Mail sent")
 
 
 if __name__ == "__main__":
     config = read_toml("credentials.toml")
     uk_json_save_dir = config["json_directories"]["uk_save_dir"]
-    mapbox_token = config['mapbox_token']['mapbox_token']
-    sender_address = config['gmail']['sender_address']
-    gmail_password = config['gmail']['password']
+    mapbox_token = config["mapbox_token"]["mapbox_token"]
+    sender_address = config["gmail"]["sender_address"]
+    gmail_password = config["gmail"]["password"]
+    recipient_addresses = config["gmail"]["recipient_addresses"]
 
     latest_jsons_fnames = find_latest_n_jsons(uk_json_save_dir)
     latest_jsons = read_latest_n_jsons(uk_json_save_dir, latest_jsons_fnames)
@@ -113,10 +134,15 @@ if __name__ == "__main__":
         new_parkrun_loc_dict[run] = find_new_parkun_locations(new_json, run)[1]
 
     create_map(new_parkrun_loc_dict, mapbox_token, MAP_SAVE_FNAME)
-    test_content =  '''Hello,
-    This is a simple mail. There is only text, no attachments are there The mail is sent using Python SMTP library.
-    Thank You'''
-    send_email(sender_address,
-               gmail_password,
-               "briananowe@gmail.com",
-               test_content)
+    new_parkruns_content = "\n".join([x for x in new_parkrun_loc_dict.keys()])
+    test_content = f"This weeks new parkruns:\n {new_parkruns_content}"
+
+    for recipient in recipient_addresses:
+        send_email(
+            sender_address,
+            gmail_password,
+            recipient,
+            test_content,
+            f"{MAP_SAVE_FNAME}",
+            f"{DATE_TODAY}" + ".html",
+        )
