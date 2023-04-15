@@ -35,16 +35,35 @@ def find_latest_n_jsons(uk_jsons: Union[Path, str], n: int = 2) -> list[str]:
 
 
 def read_latest_n_jsons(
-    json_save_dir: Union[Path, str], latest_files: list[str]
+    json_load_dir: Union[Path, str], latest_files: list[str]
 ) -> list[dict]:
+    """Loads in the latest jsons as specified by the latest_files list
+
+    Args:
+        json_load_dir (Union[Path, str]): directory contianing saved jsons
+        latest_files (list[str]): json filenames to load
+
+    Returns:
+        list[dict]: list containing loaded jsons
+    """
     newest_jsons = []
     for filename in latest_files:
-        full_filename = Path(json_save_dir, filename + ".json")
+        full_filename = Path(json_load_dir, filename + ".json")
         newest_jsons.append(read_json(full_filename))
     return newest_jsons
 
 
 def find_new_parkruns(new_json: dict, prev_json: dict) -> list[str]:
+    """Compare two json files and retrive events that exist in new_json
+    that do no exist in prev_json.
+
+    Args:
+        new_json (dict): newest parkrun json
+        prev_json (dict): previous parkrun json
+
+    Returns:
+        list[str]: event names found in new but not prev
+    """
     new_event_names = []
     for event in new_json:
         new_event_names.append(event["properties"]["EventLongName"])
@@ -54,17 +73,34 @@ def find_new_parkruns(new_json: dict, prev_json: dict) -> list[str]:
     return [i for i in new_event_names if i not in prev_event_names]
 
 
-def find_new_parkun_locations(
-    new_json: dict, event_name: str
+def find_parkun_locations(
+    parkrun_json: dict, event_name: str
 ) -> tuple[str, list[float]]:
-    for i in range(len(new_json)):
-        if new_json[i]["properties"]["EventLongName"] == event_name:
-            return event_name, new_json[i]["geometry"]["coordinates"]
+    """Retrive location (lat,lon) data for
+
+    Args:
+        parkrun_json (dict): json containing event names and location data
+        event_name (str): events to find location data for
+
+    Returns:
+        tuple[str, list[float]]: tuple containing lat, lon for events specified
+    """
+    for i in range(len(parkrun_json)):
+        if parkrun_json[i]["properties"]["EventLongName"] == event_name:
+            return event_name, parkrun_json[i]["geometry"]["coordinates"]
 
 
 def create_map(
     new_parkun_dict: dict, mapbox_token: str, save_fname: Union[Path, str]
 ) -> None:
+    """Creates and saves scatter map containing events specified in the
+    new_parkrun_dict
+
+    Args:
+        new_parkun_dict (dict): dict containing event names and lat,lon data
+        mapbox_token (str): mapbox credentials
+        save_fname (Union[Path, str]): filename of saved scatter
+    """
     df = (
         pd.DataFrame.from_dict(new_parkun_dict)
         .T.reset_index()
@@ -118,13 +154,14 @@ def send_email(
 
 
 if __name__ == "__main__":
+    # Load credentials
     config = read_toml("credentials.toml")
     uk_json_save_dir = config["json_directories"]["uk_save_dir"]
     mapbox_token = config["mapbox_token"]["mapbox_token"]
     sender_address = config["gmail"]["sender_address"]
     gmail_password = config["gmail"]["password"]
     recipient_addresses = config["gmail"]["recipient_addresses"]
-
+    # Find new parkruns
     latest_jsons_fnames = find_latest_n_jsons(uk_json_save_dir)
     latest_jsons = read_latest_n_jsons(uk_json_save_dir, latest_jsons_fnames)
     new_json = latest_jsons[0]
@@ -132,9 +169,12 @@ if __name__ == "__main__":
     new_parkruns = find_new_parkruns(new_json, prev_json)
     new_parkrun_loc_dict = {}
     for run in new_parkruns:
-        new_parkrun_loc_dict[run] = find_new_parkun_locations(new_json, run)[1]
+        new_parkrun_loc_dict[run] = find_parkun_locations(new_json, run)[1]
 
+    # Create new parkrun map
     create_map(new_parkrun_loc_dict, mapbox_token, MAP_SAVE_FNAME)
+
+    # Email new parkruns to recipients
     new_parkruns_content = "\n".join([x for x in new_parkrun_loc_dict.keys()])
     mail_content = f"This weeks new parkruns:\n {new_parkruns_content}"
     attachment = MAP_SAVE_FNAME
