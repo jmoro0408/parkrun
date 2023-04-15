@@ -1,6 +1,7 @@
 json_files/
 scratch.ipynb
 uk_json/
+credentials.toml
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
