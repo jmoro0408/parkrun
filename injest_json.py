@@ -18,11 +18,12 @@ def request_json(url: str) -> dict:
     resp = requests.get(url=url)
     return resp.json()
 
-
-if __name__ == "__main__":
+def injest_main():
     config = read_toml(CONFIG_DIR)
     url = config["parkrun_site"]["url"]
     json_save_folder = config["json_directories"]["save_dir"]
     json_dict = request_json(url)
     date_today = datetime.today().strftime("%Y-%m-%d")
     save_json(json_dict, date_today, json_save_folder)
+
+

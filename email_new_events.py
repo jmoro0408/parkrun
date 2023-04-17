@@ -152,8 +152,7 @@ def send_email(
     mail_server.quit()
     print("Mail sent")
 
-
-if __name__ == "__main__":
+def email_new_events_main():
     # Load credentials
     config = read_toml("credentials.toml")
     uk_json_save_dir = config["json_directories"]["uk_save_dir"]

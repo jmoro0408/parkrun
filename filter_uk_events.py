@@ -24,7 +24,7 @@ def find_none_filtered_jsons(
     return [x for x in full_jsons if x not in uk_jsons]
 
 
-if __name__ == "__main__":
+def filter_uk_events_main():
     config = read_toml("credentials.toml")
     json_save_dir = config["json_directories"]["save_dir"]
     uk_json_save_dir = config["json_directories"]["uk_save_dir"]
@@ -36,3 +36,4 @@ if __name__ == "__main__":
     for fname, uk_event in zip(none_filtered, uk_events):
         fname = Path(fname.name)
         save_json(uk_event, fname, UK_JSON_SAVE_DIR)
+
