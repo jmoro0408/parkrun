@@ -7,3 +7,6 @@ def injest_filter_mail():
     injest_main()
     filter_uk_events_main()
     email_new_events_main()
+
+if __name__ == "__main__":
+    injest_filter_mail()
