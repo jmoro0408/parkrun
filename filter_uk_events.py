@@ -36,4 +36,3 @@ def filter_uk_events_main():
     for fname, uk_event in zip(none_filtered, uk_events):
         fname = Path(fname.name)
         save_json(uk_event, fname, UK_JSON_SAVE_DIR)
-

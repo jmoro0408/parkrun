@@ -152,6 +152,7 @@ def send_email(
     mail_server.quit()
     print("Mail sent")
 
+
 def email_new_events_main():
     # Load credentials
     config = read_toml("credentials.toml")
