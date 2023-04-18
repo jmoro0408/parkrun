@@ -171,7 +171,8 @@ def email_new_events_main():
         new_parkrun_loc_dict[run] = find_parkun_locations(new_json, run)[1]
 
     # Create new parkrun map
-    create_map(new_parkrun_loc_dict, mapbox_token, MAP_SAVE_FNAME)
+    if len(new_parkrun_loc_dict.keys()) > 0:
+        create_map(new_parkrun_loc_dict, mapbox_token, MAP_SAVE_FNAME)
 
     # Email new parkruns to recipients
     new_parkruns_content = "\n".join([x for x in new_parkrun_loc_dict.keys()])
