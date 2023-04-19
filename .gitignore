@@ -4,7 +4,6 @@ uk_json/
 credentials.toml
 maps/
 gmail_credentials.json
-readme_visuals/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
