@@ -2,8 +2,6 @@ import mimetypes
 import smtplib
 from datetime import datetime
 from email.message import EmailMessage
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from pathlib import Path
 from typing import Union
 

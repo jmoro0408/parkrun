@@ -2,10 +2,7 @@
 Module to pull the latest parkrun json data and save in a local folder
 with todays date.
 """
-import json
 from datetime import datetime
-from pathlib import Path
-from typing import Union
 
 import requests
 
