@@ -16,9 +16,9 @@ New parkrun events are always springing up, however a list of new events is not 
 
 ![architecture diagram](https://raw.githubusercontent.com/jmoro0408/parkrun/main/readme_visuals/architecture.png)
 
-The workflow automatically runs weekly, every Sunday morning. It uses the Python [requests](https://requests.readthedocs.io/en/latest/) library to scrape parkrun event json data and store it locally.
+The workflow automatically runs weekly, every Sunday morning. It uses the Python requests library to scrape parkrun event json data and store it locally.
 
-All UK events are then filtered out and the latest event data compared to that of the previous week. All new events are collected and their locations plotted on an interactive map of the UK, an example static version is shown below. For the full interative version, check out [my blog post mirror of this readme](https://jmoro0408.github.io/).
+All UK events are then filtered out and the latest event data compared to that of the previous week. All new events are collected and their locations plotted on an interactive map of the UK, an example static version is shown below. For the full interative version, check out [my blog post mirror of this readme](https://jmoro0408.github.io/project/parkrun-airflow-notification).
 
 
 ![static_map](https://raw.githubusercontent.com/jmoro0408/parkrun/main/readme_visuals/map_static.png)
