@@ -26,3 +26,5 @@ All UK events are then filtered out and the latest event data compared to that o
 Finally the new events are emailed along with the interactive map to a distirbution list.
 
 These tasks are orchestrated via [Apache Airflow](https://airflow.apache.org/docs/apache-airflow/stable/index.html), contained within Docker, hosted on a raspberry pi. This is almost certainly overkill for what could feasibly automated with a simple cron job, however it was a good opportunity to expand both my Docker and Airflow knowledge.
+
+Note that in order to run this on your own system, several credentials are required, and a custom Airflow container needs to be built. For information on recreating this yourself send me a message on my [site](https://jmoro0408.github.io/).
