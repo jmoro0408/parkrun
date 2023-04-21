@@ -47,3 +47,4 @@ def save_json(dict_to_save: dict, fname: str, save_dir: Union[Path, str]) -> Non
     jsonpath = Path(save_dir, fname)
     with open(jsonpath, "w") as f:
         json.dump(dict_to_save, f, ensure_ascii=False)
+    return None

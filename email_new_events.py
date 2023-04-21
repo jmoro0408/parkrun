@@ -122,6 +122,7 @@ def create_map(
         mapbox_style="open-street-map",
     )
     fig.write_html(save_fname)
+    return None
 
 
 def send_email(
@@ -165,6 +166,7 @@ def send_email(
     mail_server.send_message(message)
     mail_server.quit()
     print("Mail sent")
+    return None
 
 
 def email_new_events_main() -> None:

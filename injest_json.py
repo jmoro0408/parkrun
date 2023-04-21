@@ -24,7 +24,7 @@ def request_json(url: str) -> dict:
     return resp.json()
 
 
-def injest_main():
+def injest_main() -> None:
     """Main function to read in the parkrun json data and save in a local directory."""
     config = read_toml(CONFIG_DIR)
     url = config["parkrun_site"]["url"]
@@ -32,3 +32,4 @@ def injest_main():
     json_dict = request_json(url)
     date_today = datetime.today().strftime("%Y-%m-%d")
     save_json(json_dict, date_today, json_save_folder)
+    return None
