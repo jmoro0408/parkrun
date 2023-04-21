@@ -1,4 +1,6 @@
-"""Module to filter out UK-based parkrun events from the full, global, parkrun event json data
+"""
+Module to filter out UK-based parkrun events from the full, global, parkrun
+event json data
 """
 from pathlib import Path
 from typing import Union
@@ -28,17 +30,19 @@ def filter_uk_parkruns(full_json: dict) -> list[dict]:
 
 def find_none_filtered_jsons(
     full_json_save_dir: Union[Path, str], filtered_uk_json_save_dir: Union[Path, str]
-) -> list[str]:
+) -> list[Union[Path,str]]:
     """When filtering for UK events, we don't want to redo any work that has already
     taken place.
     This function compares a folder containing json files with all (global) events, and
     another with previously filtered UK events.
-    It returns the filenames of any events (existing in the full events json folder) that
-    have not yet been processed for filtering.
+    It returns the filenames of any events (existing in the full events json folder)
+    that have not yet been processed for filtering.
 
     Args:
-        full_json_save_dir (Union[Path, str]): directory containing full (global) event json data
-        filtered_uk_json_save_dir (Union[Path, str]): directory containing previously filtered UK event data
+        full_json_save_dir (Union[Path, str]):
+                directory containing full (global) event json data
+        filtered_uk_json_save_dir (Union[Path, str]):
+                directory containing previously filtered UK event data
 
     Returns:
         list[str]: list of full json filenames that have not yet been filtered.
@@ -48,7 +52,7 @@ def find_none_filtered_jsons(
     return [x for x in full_jsons if x not in uk_jsons]
 
 
-def filter_uk_events_main():
+def filter_uk_events_main() -> None:
     """Main function to read in the global event jsons, filter out UK events, and
     save these UK event jsons in a different folder.
     """
@@ -63,3 +67,4 @@ def filter_uk_events_main():
     for fname, uk_event in zip(none_filtered, uk_events):
         fname = Path(fname.name)
         save_json(uk_event, fname, UK_JSON_SAVE_DIR)
+    return None

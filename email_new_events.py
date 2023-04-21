@@ -167,7 +167,7 @@ def send_email(
     print("Mail sent")
 
 
-def email_new_events_main():
+def email_new_events_main() -> None:
     """main function to coordinate the detection of new events, generation of maps, and
     emailing to recipients.
     """
@@ -209,3 +209,4 @@ def email_new_events_main():
             attachment,
             f"{DATE_TODAY}" + ".html",
         )
+    return None
