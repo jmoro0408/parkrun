@@ -12,11 +12,21 @@ CONFIG_DIR = "credentials.toml"
 
 
 def request_json(url: str) -> dict:
+    """Pulls json data from a supplied url
+
+    Args:
+        url (str): url pointing to json data
+
+    Returns:
+        dict: json data as a dictionary
+    """
     resp = requests.get(url=url)
     return resp.json()
 
 
 def injest_main():
+    """Main function to read in the parkrun json data and save in a local directory.
+    """
     config = read_toml(CONFIG_DIR)
     url = config["parkrun_site"]["url"]
     json_save_folder = config["json_directories"]["save_dir"]

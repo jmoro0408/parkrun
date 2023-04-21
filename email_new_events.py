@@ -1,9 +1,14 @@
+"""
+Module to detect new parkrun events and coordinate the notification system.
+Notifications are sent out via gmail, with credentials stored in a credentials.toml
+file.
+"""
 import mimetypes
 import smtplib
 from datetime import datetime
 from email.message import EmailMessage
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 import pandas as pd
 import plotly.express as px
@@ -121,13 +126,24 @@ def create_map(
 
 def send_email(
     sender_address: str,
-    password: str,
+    sender_password: str,
     recipient_address: str,
     mail_content: str,
-    attachment,
+    attachment: Optional[Path],
     attachment_fname: str,
 ) -> None:
+    """Coordinates the automatic email notification system.
 
+    Args:
+        sender_address (str): email address of the system sender
+        sender_password (str):password associated with the email address.
+            Note, for gmail accounts, this must be an "app password",
+            not the typical login password.
+        recipient_address (str): email address of recipient
+        mail_content (str): text content of the email
+        attachment (Optional[Path]): attachment to include in email
+        attachment_fname (str): name of the attachment to appear in the sent email
+    """
     message = EmailMessage()
     message["From"] = sender_address
     message["To"] = recipient_address
@@ -145,13 +161,16 @@ def send_email(
                 filename=attachment_fname,
             )
     mail_server = smtplib.SMTP_SSL("smtp.gmail.com")
-    mail_server.login(sender_address, password)
+    mail_server.login(sender_address, sender_password)
     mail_server.send_message(message)
     mail_server.quit()
     print("Mail sent")
 
 
 def email_new_events_main():
+    """main function to coordinate the detection of new events, generation of maps, and
+    emailing to recipients.
+    """
     # Load credentials
     config = read_toml("credentials.toml")
     uk_json_save_dir = config["json_directories"]["uk_save_dir"]
